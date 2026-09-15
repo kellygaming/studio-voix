@@ -1,0 +1,21 @@
+{
+  "name": "studio-voix-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "dev": "tsc -p . && node --env-file=.env dist/index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.10"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "~5.7.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
