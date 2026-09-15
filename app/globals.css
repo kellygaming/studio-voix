@@ -1,0 +1,53 @@
+:root {
+  --fond: #f4f3fa;
+  --encre: #1b1a22;
+  --texte: #3c3a48;
+  --gris: #6b6880;
+  --bord: #dcdae6;
+  --violet: #6f3ff5;
+  --violet-fonce: #4f24c9;
+  --grad-violet: linear-gradient(160deg, #6a5cff 0%, #b04cf0 100%);
+  --grad-bleu: linear-gradient(160deg, #3f7cf6 0%, #3ad0f5 100%);
+  --grad-vert: linear-gradient(160deg, #2fcf7a 0%, #19b7b4 100%);
+  --rose: #f0508a;
+  --jaune: #f7d84a;
+  --nuit: #2b2358;
+  --cobalt: #3f7cf6;
+  --cyan: #3ad0f5;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: #fff;
+  color: var(--encre);
+  font-family: var(--font-jakarta), Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--violet); text-decoration: none; }
+a:hover { color: var(--violet-fonce); }
+img { max-width: 100%; display: block; }
+button { font: inherit; cursor: pointer; }
+
+.page { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 16px 40px; display: flex; flex-direction: column; gap: 64px; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.center { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.h2 { margin: 0; font-size: clamp(30px, 4vw, 44px); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; text-wrap: pretty; }
+.media { position: relative; overflow: hidden; }
+.media img { width: 100%; height: 100%; object-fit: cover; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 999px; font-weight: 700; font-size: 15px; padding: 12px 20px; transition: background .15s, color .15s, opacity .15s; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-violet { background: var(--violet); color: #fff; }
+.btn-violet:hover { background: var(--violet-fonce); color: #fff; }
+.btn-noir { background: var(--encre); color: #fff; font-size: 13px; font-weight: 600; padding: 8px 14px; }
+.btn-noir:hover { background: var(--violet); color: #fff; }
+.btn-blanc { background: #fff; color: var(--encre); border: 1px solid var(--bord); font-weight: 600; }
+.btn-blanc:hover { color: var(--encre); border-color: var(--gris); }
+
+.card { background: var(--fond); border-radius: 22px; padding: 20px; }
+.input { width: 100%; font: inherit; font-size: 15px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--bord); background: #fff; color: var(--encre); }
+.input:focus { outline: 2px solid var(--violet); outline-offset: 1px; }
+.muted { color: var(--gris); }
+.error { color: #c0264f; font-weight: 600; }
+h1, h3, p { text-wrap: pretty; }
