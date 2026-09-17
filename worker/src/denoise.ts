@@ -2,6 +2,11 @@ import { readFile, writeFile } from "node:fs/promises";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/** Lit une clé d'environnement en retirant espaces, retours à la ligne et guillemets collés par erreur. */
+function secret(name: string): string {
+  return (process.env[name] ?? "").trim().replace(/^["']|["']$/g, "");
+}
+
 async function fileBlob(path: string, type: string) {
   return new Blob([new Uint8Array(await readFile(path))], { type });
 }
@@ -15,7 +20,7 @@ export async function isolateWithElevenLabs(input: string, output: string) {
   form.append("audio", await fileBlob(input, "audio/flac"), "input.flac");
   const res = await fetch("https://api.elevenlabs.io/v1/audio-isolation", {
     method: "POST",
-    headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY ?? "" },
+    headers: { "xi-api-key": secret("ELEVENLABS_API_KEY") },
     body: form,
   });
   if (!res.ok) throw new Error(`ElevenLabs Voice Isolator : ${res.status} ${await res.text()}`);
@@ -28,7 +33,9 @@ export async function isolateWithElevenLabs(input: string, output: string) {
  */
 export async function denoiseWithAuphonic(input: string, output: string, title: string, onProgress?: (p: number) => void) {
   const base = "https://auphonic.com/api";
-  const headers = { Authorization: `Bearer ${process.env.AUPHONIC_API_TOKEN ?? ""}` };
+  const token = secret("AUPHONIC_API_TOKEN");
+  if (!token) throw new Error("Auphonic : AUPHONIC_API_TOKEN manquant sur le worker");
+  const headers = { Authorization: `Bearer ${token}` };
 
   const createRes = await fetch(`${base}/productions.json`, {
     method: "POST",
@@ -39,6 +46,9 @@ export async function denoiseWithAuphonic(input: string, output: string, title: 
       algorithms: { denoise: true, denoiseamount: 0, hipfilter: true, leveler: false, normloudness: false },
     }),
   });
+  if (createRes.status === 401 || createRes.status === 403) {
+    throw new Error(`Auphonic : clé API refusée (${createRes.status}). Vérifiez AUPHONIC_API_TOKEN (Auphonic → Account Settings → API Key).`);
+  }
   if (!createRes.ok) throw new Error(`Auphonic (création) : ${createRes.status} ${await createRes.text()}`);
   const uuid = ((await createRes.json()) as { data: { uuid: string } }).data.uuid;
 
