@@ -65,6 +65,11 @@ const details = [
   },
 ];
 
+const legalLinks = [
+  { label: "Règles de confidentialité", href: "/confidentialite" },
+  { label: "Conditions d'utilisation", href: "/conditions" },
+];
+
 export default function Home() {
   return (
     <div className="page">
@@ -240,10 +245,10 @@ export default function Home() {
             <strong style={{ fontSize: 14 }}>Studio Voix</strong>
           </div>
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-            {["Confidentialité", "Conditions d'utilisation", "Cookies"].map((l) => (
-              <a key={l} href="#" style={{ fontSize: 12, color: "var(--gris)" }}>
-                {l}
-              </a>
+            {legalLinks.map((l) => (
+              <Link key={l.href} href={l.href} style={{ fontSize: 12, color: "var(--gris)" }}>
+                {l.label}
+              </Link>
             ))}
           </div>
           <span style={{ fontSize: 12, color: "var(--gris)" }}>© 2026 Studio Voix. Tous droits réservés.</span>
