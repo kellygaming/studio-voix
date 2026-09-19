@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { buildFfmpegFilter, keptSegments, type Cut } from "./cuts.js";
-import { denoiseWithAuphonic, isolateWithElevenLabs } from "./denoise.js";
+import { denoiseWithAuphonic } from "./denoise.js";
 import { computePeaks, probeDuration, run, toFlac, toPreviewMp3, toWav } from "./ffmpeg.js";
 import { limitsFor } from "./plans.js";
 import { transcribe } from "./transcribe.js";
@@ -60,11 +60,7 @@ async function processJob(job: Job, dir: string) {
   const rawFlac = join(dir, "raw.flac");
   await toFlac(rawWav, rawFlac);
   const denoised = join(dir, "denoised");
-  if (limits.denoiser === "elevenlabs") {
-    await isolateWithElevenLabs(rawFlac, denoised);
-  } else {
-    await denoiseWithAuphonic(rawFlac, denoised, `${project.id}`, (p) => void step("denoise", 0.15 + p * 0.4));
-  }
+  await denoiseWithAuphonic(rawFlac, denoised, `${project.id}`, limits.denoise, (p) => void step("denoise", 0.15 + p * 0.4));
   const cleanWav = join(dir, "clean.wav");
   await toWav(denoised, cleanWav);
 

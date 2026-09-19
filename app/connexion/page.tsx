@@ -1,8 +1,8 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Logo } from "@/components/Logo";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ConnexionPage() {
@@ -54,10 +54,7 @@ function Connexion() {
 
   return (
     <div className="page" style={{ maxWidth: 460, paddingTop: 40 }}>
-      <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--encre)" }}>
-        <span style={{ width: 28, height: 28, borderRadius: 8, background: "var(--violet)" }} />
-        <strong>Studio Voix</strong>
-      </Link>
+      <Logo />
       <div className="card" style={{ padding: 28, display: "flex", flexDirection: "column", gap: 16 }}>
         <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em" }}>Se connecter</h1>
 
