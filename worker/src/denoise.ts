@@ -1,4 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
+import type { DenoiseProfile } from "./plans.js";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -11,27 +12,22 @@ async function fileBlob(path: string, type: string) {
   return new Blob([new Uint8Array(await readFile(path))], { type });
 }
 
-/**
- * Offre Voix Studio : ElevenLabs Voice Isolator.
- * Entrée : fichier audio ; sortie écrite dans `output` (format renvoyé par l'API, à reconvertir en WAV).
- */
-export async function isolateWithElevenLabs(input: string, output: string) {
-  const form = new FormData();
-  form.append("audio", await fileBlob(input, "audio/flac"), "input.flac");
-  const res = await fetch("https://api.elevenlabs.io/v1/audio-isolation", {
-    method: "POST",
-    headers: { "xi-api-key": secret("ELEVENLABS_API_KEY") },
-    body: form,
-  });
-  if (!res.ok) throw new Error(`ElevenLabs Voice Isolator : ${res.status} ${await res.text()}`);
-  await writeFile(output, Buffer.from(await res.arrayBuffer()));
-}
+// Doit rester aligné sur le loudnorm appliqué à l'export (worker/src/cuts.ts) : sans quoi
+// l'aperçu entendu dans l'éditeur n'a pas le niveau du MP3 final.
+const LOUDNESS_TARGET_LUFS = -16;
+const MAX_PEAK_DBTP = -1.5;
 
 /**
- * Offre Standard : Auphonic (débruitage uniquement ; le niveau final est géré à l'export).
+ * Débruitage Auphonic (toutes les offres ; le niveau du fichier final est refait à l'export).
  * Flux : créer la production → envoyer le fichier → démarrer → attendre → télécharger.
  */
-export async function denoiseWithAuphonic(input: string, output: string, title: string, onProgress?: (p: number) => void) {
+export async function denoiseWithAuphonic(
+  input: string,
+  output: string,
+  title: string,
+  profile: DenoiseProfile,
+  onProgress?: (p: number) => void,
+) {
   const base = "https://auphonic.com/api";
   const token = secret("AUPHONIC_API_TOKEN");
   if (!token) throw new Error("Auphonic : AUPHONIC_API_TOKEN manquant sur le worker");
@@ -43,11 +39,28 @@ export async function denoiseWithAuphonic(input: string, output: string, title: 
     body: JSON.stringify({
       metadata: { title },
       output_files: [{ format: "wav", ending: "wav" }],
-      algorithms: { denoise: true, denoiseamount: 0, hipfilter: true, leveler: false, normloudness: false },
+      algorithms: {
+        denoise: true,
+        denoisemethod: profile.method,
+        denoiseamount: profile.denoiseAmount,
+        dereverbamount: profile.dereverbAmount,
+        debreath: profile.debreath,
+        debreathamount: profile.debreath ? 0 : -1,
+        hipfilter: true,
+        // Le leveler corrige les écarts de volume à l'intérieur du fichier (locuteur qui
+        // s'éloigne du micro) ; loudnorm à l'export ne règle que le niveau global.
+        leveler: true,
+        normloudness: true,
+        loudnesstarget: LOUDNESS_TARGET_LUFS,
+        maxpeak: MAX_PEAK_DBTP,
+      },
     }),
   });
   if (createRes.status === 401 || createRes.status === 403) {
     throw new Error(`Auphonic : clé API refusée (${createRes.status}). Vérifiez AUPHONIC_API_TOKEN (Auphonic → Account Settings → API Key).`);
+  }
+  if (createRes.status === 402) {
+    throw new Error("Auphonic : crédits épuisés. Rechargez l'abonnement (Auphonic → Credits) avant de relancer le traitement.");
   }
   if (!createRes.ok) throw new Error(`Auphonic (création) : ${createRes.status} ${await createRes.text()}`);
   const uuid = ((await createRes.json()) as { data: { uuid: string } }).data.uuid;

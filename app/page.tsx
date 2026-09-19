@@ -179,12 +179,12 @@ export default function Home() {
           <div className="pro-price-grid">
             <article className="pro-price-card">
               <span>Standard</span><h3>Pour publier régulièrement</h3>
-              <ul><li>120 minutes par mois</li><li>Nettoyage des bruits de fond</li><li>Transcription et édition par texte</li><li>Export MP3 normalisé</li></ul>
+              <ul><li>120 minutes par mois</li><li>Bruits de fond, écho et respirations</li><li>Volume égalisé sur tout l’enregistrement</li><li>Transcription et édition par texte</li><li>Export MP3 normalisé</li></ul>
               <CtaLink href="/connexion?offre=standard" event="offre_choisie" meta="InitiateCheckout" className="btn pro-secondary">Choisir Standard</CtaLink>
             </article>
             <article className="pro-price-card featured">
               <div className="pro-popular">Qualité maximale</div><span>Voix Studio</span><h3>Pour un rendu proche du studio</h3>
-              <ul><li>300 minutes par mois</li><li>Isolation vocale avancée</li><li>Tout Standard inclus</li><li>Traitement prioritaire</li></ul>
+              <ul><li>300 minutes par mois</li><li>Isolation de la voix : tout le reste est retiré</li><li>Tout Standard inclus</li><li>Traitement prioritaire</li></ul>
               <CtaLink href="/connexion?offre=studio" event="offre_choisie" meta="InitiateCheckout" className="btn pro-primary">Choisir Voix Studio</CtaLink>
             </article>
           </div>
