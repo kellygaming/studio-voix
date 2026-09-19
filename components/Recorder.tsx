@@ -197,89 +197,76 @@ export function Recorder({ userId, planLabel, maxSeconds, template }: Props) {
 
   const remaining = Math.max(0, maxSeconds - elapsed);
   const liveText = [...committed, partial].filter(Boolean).join(" ");
+  const progress = Math.min(100, (elapsed / maxSeconds) * 100);
+  const isBusy = phase === "starting" || phase === "saving";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} disabled={phase !== "idle" && phase !== "error"} aria-label="Titre du projet" />
+    <div className="recorder-shell">
+      <label className="rec-field">
+        <span>Nom de l’enregistrement</span>
+        <input className="input rec-title-input" value={title} onChange={(e) => setTitle(e.target.value)} disabled={phase !== "idle" && phase !== "error"} aria-label="Titre du projet" />
+      </label>
 
-      <div
-        style={{
-          borderRadius: 24,
-          padding: "36px 20px",
-          background: "var(--grad-bleu)",
-          color: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 18,
-        }}
-      >
-        <div style={{ fontSize: 48, fontWeight: 800, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>{formatTime(elapsed)}</div>
+      <section className={`recorder-console ${phase}`} aria-label="Console d’enregistrement">
+        <div className="rec-console-top">
+          <span className="rec-status"><i />{phase === "recording" ? "Enregistrement en cours" : phase === "saving" ? "Traitement en cours" : "Prêt à enregistrer"}</span>
+          <span className="rec-format">48 kHz · haute qualité</span>
+        </div>
+
+        <div className="rec-time">{formatTime(elapsed)}</div>
         <LevelMeter level={phase === "recording" ? level : 0} />
 
         {phase === "recording" ? (
-          <button onClick={stop} className="btn" style={{ background: "#fff", color: "var(--encre)", width: 88, height: 88, borderRadius: "50%" }} aria-label="Arrêter">
-            <span style={{ width: 28, height: 28, borderRadius: 6, background: "var(--rose)" }} />
+          <button onClick={stop} className="rec-main-button stop" aria-label="Arrêter l’enregistrement">
+            <span /><b>Arrêter</b>
           </button>
         ) : (
-          <button
-            onClick={start}
-            disabled={phase === "starting" || phase === "saving"}
-            className="btn"
-            style={{ background: "#fff", width: 88, height: 88, borderRadius: "50%" }}
-            aria-label="Enregistrer"
-          >
-            <span style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--rose)" }} />
+          <button onClick={start} disabled={isBusy} className="rec-main-button" aria-label="Commencer l’enregistrement">
+            <span /><b>{phase === "error" ? "Réessayer" : "Enregistrer"}</b>
           </button>
         )}
 
-        <div style={{ fontSize: 14, fontWeight: 600, opacity: 0.95, textAlign: "center" }}>
-          {phase === "idle" && `Offre ${planLabel} : jusqu'à ${formatTime(maxSeconds)} par enregistrement`}
-          {phase === "starting" && "Accès au micro…"}
-          {phase === "recording" && `Temps restant : ${formatTime(remaining)}`}
-          {phase === "saving" && "Envoi de l'audio…"}
-          {phase === "error" && "Réessayez"}
-        </div>
-      </div>
-
-      {error && <p className="error" style={{ margin: 0 }}>{error}</p>}
-
-      <div className="card" style={{ minHeight: 120 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <strong style={{ fontSize: 15 }}>Transcription en direct</strong>
-          <span className="muted" style={{ fontSize: 12 }}>
-            {liveStatus === "on" ? "● en direct" : liveStatus === "indispo" ? "indisponible — la transcription finale sera faite après" : ""}
-          </span>
-        </div>
-        <p style={{ margin: 0, lineHeight: 1.6, color: "var(--texte)" }}>
-          {liveText || <span className="muted">Le texte s&apos;écrira ici pendant que vous parlez.</span>}
+        <p className="rec-message">
+          {phase === "idle" && "Appuyez, parlez normalement, puis arrêtez quand vous avez terminé."}
+          {phase === "starting" && "Autorisation du microphone…"}
+          {phase === "recording" && `Encore ${formatTime(remaining)} disponibles`}
+          {phase === "saving" && "Votre audio est envoyé et nettoyé…"}
+          {phase === "error" && "Vérifiez l’accès au microphone puis réessayez."}
         </p>
-      </div>
 
-      <label className="btn btn-blanc" style={{ alignSelf: "center" }}>
-        Ou importer un fichier audio
-        <input type="file" accept="audio/*" onChange={onFile} hidden disabled={phase === "recording" || phase === "saving"} />
-      </label>
+        <div className="rec-progress" aria-hidden="true"><span style={{ width: `${progress}%` }} /></div>
+        <small>Offre {planLabel} · jusqu’à {formatTime(maxSeconds)} par enregistrement</small>
+      </section>
+
+      {error && <p className="error rec-error">{error}</p>}
+
+      <div className="rec-details-grid">
+        <section className="rec-transcript-card">
+          <div className="rec-card-heading">
+            <div><span className="rec-mini-icon">T</span><div><strong>Transcription en direct</strong><small>Vos mots apparaissent pendant que vous parlez</small></div></div>
+            {liveStatus !== "off" && <span className={`rec-live-state ${liveStatus}`}>{liveStatus === "on" ? "● En direct" : "Indisponible"}</span>}
+          </div>
+          <p>{liveText || <span className="muted">La transcription commencera automatiquement avec l’enregistrement.</span>}</p>
+        </section>
+
+        <label className={`rec-import-card ${phase === "recording" || phase === "saving" ? "disabled" : ""}`}>
+          <span className="rec-upload-icon" aria-hidden="true">↑</span>
+          <div><strong>Vous avez déjà un audio ?</strong><small>Importez MP3, M4A, WAV ou WebM</small></div>
+          <b>Choisir un fichier</b>
+          <input type="file" accept="audio/*" onChange={onFile} hidden disabled={phase === "recording" || phase === "saving"} />
+        </label>
+      </div>
     </div>
   );
 }
-
 function LevelMeter({ level }: { level: number }) {
-  const bars = 24;
+  const bars = 32;
   const db = level > 0 ? 20 * Math.log10(level) : -60;
   const lit = Math.round(Math.max(0, Math.min(1, (db + 60) / 60)) * bars);
   return (
-    <div style={{ display: "flex", gap: 4, alignItems: "flex-end", height: 36 }} aria-hidden>
+    <div className="rec-level-meter" aria-hidden="true">
       {Array.from({ length: bars }, (_, i) => (
-        <span
-          key={i}
-          style={{
-            width: 6,
-            height: 8 + (i / bars) * 28,
-            borderRadius: 3,
-            background: i < lit ? (i > bars * 0.85 ? "var(--jaune)" : "#fff") : "rgba(255,255,255,0.3)",
-          }}
-        />
+        <span key={i} className={i < lit ? (i > bars * 0.84 ? "lit hot" : "lit") : ""} style={{ height: 8 + (i % 9) * 3 }} />
       ))}
     </div>
   );
