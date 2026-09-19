@@ -1,6 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import { AudioCompare } from "@/components/AudioCompare";
+import { CtaLink } from "@/components/CtaLink";
 import { Header } from "@/components/Header";
+import { Logo } from "@/components/Logo";
 import { IMAGES } from "@/lib/images";
 
 const noises = [
@@ -27,6 +30,46 @@ const legalLinks = [
   { label: "Conditions d’utilisation", href: "/conditions" },
 ];
 
+
+// Réponses aux objections les plus fréquentes. Alimente aussi le rich result « FAQ » de Google :
+// ne garder ici que des affirmations exactes sur ce que le service fait réellement.
+const faq = [
+  {
+    q: "Mes enregistrements restent-ils privés ?",
+    r: "Oui. Chaque projet est rattaché à votre compte et n’est accessible qu’à vous : vos fichiers sont isolés au niveau de la base de données. Ils ne sont ni publiés, ni partagés, et vous pouvez les supprimer à tout moment.",
+  },
+  {
+    q: "Faut-il un micro professionnel ?",
+    r: "Non, c’est précisément le but. Le micro de votre téléphone ou de votre ordinateur suffit : le traitement se charge ensuite de réduire le bruit de fond et d’équilibrer le volume.",
+  },
+  {
+    q: "Est-ce que ça fonctionne depuis un téléphone ?",
+    r: "Oui. Tout se passe dans le navigateur, il n’y a rien à installer. Vous enregistrez depuis votre téléphone et récupérez le MP3 sur le même appareil.",
+  },
+  {
+    q: "Quels bruits sont réellement réduits ?",
+    r: "Les bruits continus s’atténuent le mieux : circulation, ventilation, ronronnement d’un frigo, souffle du micro. Les respirations sont adoucies. Le résultat dépend de l’enregistrement d’origine — un bruit plus fort que la voix ne disparaîtra pas entièrement.",
+  },
+  {
+    q: "Comment se passe l’édition ?",
+    r: "Votre audio est transcrit, puis vous éditez le texte. Barrer une phrase la retire de l’audio, sans jamais toucher à l’enregistrement d’origine : toutes les coupes sont réversibles.",
+  },
+  {
+    q: "Dans quel format je récupère mon audio ?",
+    r: "Un MP3 au volume normalisé, prêt à publier sur une plateforme de podcast ou à envoyer directement à un client.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faq.map(({ q, r }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: r },
+  })),
+};
+
 export default function Home() {
   return (
     <div className="home home-pro">
@@ -39,7 +82,7 @@ export default function Home() {
               <h1 id="hero-title">La voix reste.<br /><em>Le bruit s’efface.</em></h1>
               <p className="pro-lead">Enregistrez où vous voulez. Studio Voix réduit les bruits de voiture, le ronronnement du frigo, le souffle et les respirations gênantes pour rapprocher votre voix d’un rendu studio.</p>
               <div className="hero-actions">
-                <Link href="/enregistrer" className="btn pro-primary">Tester gratuitement sur ma voix <span aria-hidden="true">↗</span></Link>
+                <CtaLink href="/enregistrer" event="essai_demarre" meta="StartTrial" className="btn pro-primary">Tester gratuitement sur ma voix <span aria-hidden="true">↗</span></CtaLink>
                 <a href="#avant-apres" className="btn pro-secondary">Voir le résultat</a>
               </div>
               <div className="pro-trust" aria-label="Avantages de l’essai">
@@ -89,20 +132,9 @@ export default function Home() {
               <span className="pro-kicker light"><span /> Écoutez la différence</span>
               <h2>De la pièce bruyante à une voix claire.</h2>
               <p>Le bruit est réduit, le volume est équilibré et votre voix reste naturelle. Le résultat dépend de l’enregistrement d’origine.</p>
-              <Link href="/enregistrer" className="btn pro-light-btn">Nettoyer mon premier audio <span aria-hidden="true">→</span></Link>
+              <CtaLink href="/enregistrer" event="essai_demarre" meta="StartTrial" className="btn pro-light-btn">Nettoyer mon premier audio <span aria-hidden="true">→</span></CtaLink>
             </div>
-            <div className="pro-compare-panel">
-              <div className="pro-audio-row before">
-                <div className="pro-audio-label"><span>Avant</span><small>Voiture · frigo · souffle</small></div>
-                <span className="pro-play" aria-hidden="true">▶</span>
-                <div className="pro-wave noisy" aria-hidden="true">{Array.from({ length: 40 }).map((_, i) => <i key={i} style={{ height: 10 + ((i * 17) % 44) }} />)}</div>
-              </div>
-              <div className="pro-audio-row after">
-                <div className="pro-audio-label"><span>Après Studio Voix</span><small>Voix claire et équilibrée</small></div>
-                <span className="pro-play" aria-hidden="true">▶</span>
-                <div className="pro-wave clean" aria-hidden="true">{Array.from({ length: 40 }).map((_, i) => <i key={i} style={{ height: 8 + ((i * 11) % 34) }} />)}</div>
-              </div>
-            </div>
+            <AudioCompare />
           </div>
         </section>
 
@@ -148,32 +180,48 @@ export default function Home() {
             <article className="pro-price-card">
               <span>Standard</span><h3>Pour publier régulièrement</h3>
               <ul><li>120 minutes par mois</li><li>Nettoyage des bruits de fond</li><li>Transcription et édition par texte</li><li>Export MP3 normalisé</li></ul>
-              <Link href="/connexion?offre=standard" className="btn pro-secondary">Choisir Standard</Link>
+              <CtaLink href="/connexion?offre=standard" event="offre_choisie" meta="InitiateCheckout" className="btn pro-secondary">Choisir Standard</CtaLink>
             </article>
             <article className="pro-price-card featured">
               <div className="pro-popular">Qualité maximale</div><span>Voix Studio</span><h3>Pour un rendu proche du studio</h3>
               <ul><li>300 minutes par mois</li><li>Isolation vocale avancée</li><li>Tout Standard inclus</li><li>Traitement prioritaire</li></ul>
-              <Link href="/connexion?offre=studio" className="btn pro-primary">Choisir Voix Studio</Link>
+              <CtaLink href="/connexion?offre=studio" event="offre_choisie" meta="InitiateCheckout" className="btn pro-primary">Choisir Voix Studio</CtaLink>
             </article>
+          </div>
+        </section>
+
+        <section id="questions" className="home-container pro-faq">
+          <div className="pro-section-heading compact">
+            <span className="pro-kicker"><span /> Bon à savoir</span>
+            <h2>Les questions qu’on nous pose.</h2>
+          </div>
+          <div className="pro-faq-list">
+            {faq.map(({ q, r }) => (
+              <details key={q} className="pro-faq-item">
+                <summary>{q}<span aria-hidden="true" /></summary>
+                <p>{r}</p>
+              </details>
+            ))}
           </div>
         </section>
 
         <section className="home-container pro-final-cta">
           <div><span className="pro-kicker light"><span /> Votre première minute est à vous</span><h2>Votre voix mérite d’être entendue, pas le bruit autour.</h2></div>
-          <Link href="/enregistrer" className="btn pro-light-btn">Essayer Studio Voix gratuitement <span aria-hidden="true">↗</span></Link>
+          <CtaLink href="/enregistrer" event="essai_demarre" meta="StartTrial" className="btn pro-light-btn">Essayer Studio Voix gratuitement <span aria-hidden="true">↗</span></CtaLink>
         </section>
       </main>
 
       <footer className="home-footer">
         <div className="home-container footer-inner">
-          <div className="pro-footer-brand"><span className="pro-logo-mark" /><div><strong>Studio Voix</strong><p>Votre studio vocal, directement dans le navigateur.</p></div></div>
+          <div className="pro-footer-brand"><Logo href={null} sombre /><p>Votre studio vocal, directement dans le navigateur.</p></div>
           <div className="pro-footer-links">
-            <a href="#outils">Nettoyage audio</a><a href="#demo">Comment ça marche</a><a href="#tarifs">Les offres</a>
+            <a href="#outils">Nettoyage audio</a><a href="#demo">Comment ça marche</a><a href="#tarifs">Les offres</a><a href="#questions">Questions fréquentes</a>
             {legalLinks.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
           </div>
           <span className="pro-copyright">© 2026 Studio Voix. Tous droits réservés.</span>
         </div>
       </footer>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
     </div>
   );
 }

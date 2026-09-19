@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { createClient } from "@/lib/supabase/server";
 
 export async function Header({ marketing = false }: { marketing?: boolean }) {
@@ -13,10 +14,7 @@ export async function Header({ marketing = false }: { marketing?: boolean }) {
 
   return (
     <header className={marketing ? "site-header" : undefined} style={marketing ? undefined : { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, height: 56 }}>
-      <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--encre)" }}>
-        <span style={{ width: 28, height: 28, borderRadius: 8, background: "var(--violet)" }} />
-        <strong style={{ fontSize: 16, fontWeight: 700 }}>Studio Voix</strong>
-      </Link>
+      <Logo />
       {marketing && (
         <nav className="site-nav" aria-label="Navigation principale">
           <a href="#outils">Les outils</a>

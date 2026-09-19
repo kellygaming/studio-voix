@@ -60,8 +60,31 @@ npm run dev
 
 Le plan d'un utilisateur (`profiles.plan`, `plan_expires_at`) est modifié côté serveur après confirmation du paiement Mobile Money (à brancher).
 
+## Référencement et mesure
+
+| Fichier | Rôle |
+|---|---|
+| `lib/site.ts` | URL publique du site. **À définir via `NEXT_PUBLIC_SITE_URL`** sur le vrai domaine. |
+| `app/opengraph-image.tsx` | Image de partage (WhatsApp, Facebook, LinkedIn), générée au build. |
+| `app/icon.svg`, `app/apple-icon.tsx` | Favicon et icône iOS. |
+| `app/robots.ts`, `app/sitemap.ts` | `robots.txt` et `sitemap.xml`. |
+| `components/Analytics.tsx` | GA4 + Meta Pixel. Aucun script chargé tant que les identifiants sont vides. |
+| `lib/analytics.ts` | `track()` : envoie un événement de conversion aux deux régies. |
+
+Événements déjà branchés : `essai_demarre` (StartTrial), `offre_choisie` (InitiateCheckout),
+`demo_ecoutee`.
+
 ## À faire
 
-- Paiement Mobile Money (webhook → mise à jour de `profiles`).
+- **Fixer les prix** : `app/page.tsx` présente les offres sans montant, et `lib/plans.ts`
+  attend les tarifs de vente. Indispensable avant toute campagne payante.
+- **Paiement Mobile Money** (webhook → mise à jour de `profiles`).
+- **Compléter `lib/legal.ts`** : `contactEmail` est vide et `site` pointe encore sur
+  l'URL `*.vercel.app`. Les régies publicitaires exigent un contact réel.
+- **Déposer les deux extraits de démonstration** dans `public/audio/`
+  (voir `public/audio/README.md`) : sans eux, la section « Écoutez la différence »
+  s'affiche désactivée.
+- Décider si l'essai est possible **sans compte** : aujourd'hui `middleware.ts` renvoie
+  `/enregistrer` vers `/connexion`, ce qui met un mur d'inscription devant le premier essai.
 - Optionnel : passe LLM pour retirer les « euh » et ponctuer.
 - Héberger les visuels dans `public/images/` (actuellement servis depuis le CDN Higgsfield, voir `lib/images.ts`).
