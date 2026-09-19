@@ -13,7 +13,7 @@ const featureCards = [
     href: "/enregistrer",
   },
   {
-    bg: "var(--grad-bleu)",
+    bg: "linear-gradient(145deg, #235acc, #167c9f)",
     icon: <path d="M3 12h2l2-6 3 12 3-9 2 5 2-2h4" />,
     title: "Nettoyer le son",
     text: "Bruits ambiants, écho, souffle : supprimés en un clic.",
@@ -21,7 +21,7 @@ const featureCards = [
     href: "/enregistrer",
   },
   {
-    bg: "var(--grad-vert)",
+    bg: "linear-gradient(145deg, #117d5a, #087980)",
     icon: <path d="M4 6h16M4 12h10M4 18h7M15 15l5 5M20 15l-5 5" />,
     title: "Éditer comme un texte",
     text: "Barrez une phrase, elle disparaît de l'audio. Les silences se coupent tout seuls.",
@@ -72,133 +72,126 @@ const legalLinks = [
 
 export default function Home() {
   return (
-    <div className="page">
-      <Header />
+    <div className="home">
+      <Header marketing />
+      <main id="contenu">
 
-      {/* HERO */}
-      <section
-        style={{
-          background: "var(--fond)",
-          borderRadius: 24,
-          padding: "24px 20px 28px",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          gap: 28,
-          alignItems: "center",
-        }}
-      >
-        <div style={{ order: 2, display: "flex", flexDirection: "column", gap: 16 }}>
-          <h1 style={{ margin: 0, fontSize: "clamp(34px, 5vw, 56px)", lineHeight: 1.05, fontWeight: 800, letterSpacing: "-0.02em" }}>
-            Une voix de studio, sans micro pro
-          </h1>
-          <p style={{ margin: 0, fontSize: 17, lineHeight: 1.5, color: "var(--texte)" }}>
-            Enregistrez depuis votre navigateur, nettoyez le son, éditez votre audio comme un texte. Rien à installer.
-          </p>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <Link href="/enregistrer" className="btn btn-violet">
-              Commencer gratuitement
-            </Link>
-            <a href="#demo" className="btn btn-blanc">
-              Voir une démo
-            </a>
+      <section className="home-hero" aria-labelledby="hero-title">
+        <div className="home-container hero-inner">
+          <div className="hero-copy">
+            <span className="eyebrow">Votre voix. Toutes vos idées.</span>
+            <h1 id="hero-title">Une voix de studio,<br /><span>sans micro pro.</span></h1>
+            <p>Enregistrez, nettoyez le son et éditez votre audio comme un texte. Votre studio est déjà dans votre navigateur.</p>
+            <div className="hero-actions">
+              <Link href="/enregistrer" className="btn btn-violet">Commencer gratuitement <span aria-hidden="true">↗</span></Link>
+              <a href="#demo" className="btn btn-blanc">Découvrir le studio</a>
+            </div>
+            <p className="hero-note">3 minutes offertes · Rien à installer</p>
+          </div>
+          <div className="hero-visual">
+            <div className="media hero-image">
+              <Image src={IMAGES.hero} alt="Une femme enregistre sa voix avec son téléphone" fill priority sizes="(max-width: 760px) 100vw, 50vw" />
+            </div>
+            <div className="hero-badge"><span className="record-dot" /> Les bonnes idées méritent un beau son.</div>
           </div>
         </div>
-        <div className="media" style={{ order: 1, aspectRatio: "4 / 3", borderRadius: 18 }}>
-          <Image src={IMAGES.hero} alt="Une femme enregistre sa voix avec son téléphone" fill priority sizes="(max-width: 700px) 100vw, 540px" />
-        </div>
       </section>
-
+      <div className="home-container home-content">
       {/* CARTES */}
-      <section className="grid-auto">
+      <section id="outils" className="tools-section" aria-label="Les outils Studio Voix">
+        <div className="tools-grid">
         {featureCards.map((c) => (
           <div
             key={c.title}
-            style={{ borderRadius: 22, padding: "32px 22px", background: c.bg, color: "#fff", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 10 }}
+            className="tool-card" style={{ background: c.bg }}
           >
             <span style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.22)", display: "grid", placeItems: "center" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 {c.icon}
               </svg>
             </span>
-            <h3 style={{ margin: "6px 0 0", fontSize: 22, fontWeight: 800 }}>{c.title}</h3>
-            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.45, opacity: 0.95 }}>{c.text}</p>
-            <Link href={c.href} style={{ marginTop: 8, background: "#fff", color: "var(--encre)", fontSize: 13, fontWeight: 700, padding: "9px 16px", borderRadius: 999 }}>
+            <h2>{c.title}</h2>
+            <p>{c.text}</p>
+            <Link href={c.href} className="btn btn-blanc">
               {c.cta}
             </Link>
           </div>
         ))}
-      </section>
-
-      {/* MINI-FONCTIONNALITÉS */}
-      <section className="grid-auto" style={{ gap: 12 }}>
+        </div>
+        <div className="small-tools-grid">
         {smallFeatures.map((f) => (
-          <div key={f.title} style={{ display: "flex", gap: 14, alignItems: "flex-start", background: f.bg, borderRadius: 18, padding: 18 }}>
+          <div key={f.title} className="small-tool" style={{ background: f.bg }}>
             <span style={{ flex: "none", width: 36, height: 36, borderRadius: 10, background: f.dot }} />
             <div>
-              <strong style={{ display: "block", fontSize: 15 }}>{f.title}</strong>
-              <span style={{ fontSize: 13, color: "#4a485a", lineHeight: 1.4 }}>{f.text}</span>
+              <strong>{f.title}</strong>
+              <span className="small-tool-description">{f.text}</span>
             </div>
           </div>
         ))}
+        </div>
       </section>
 
       {/* NAVIGATEUR */}
-      <section id="demo" className="center" style={{ gap: 14 }}>
-        <h2 className="h2" style={{ maxWidth: 620 }}>
+      <section id="demo" className="demo-section center">
+        <span className="eyebrow">Simple, du premier mot au fichier final</span>
+        <h2 className="h2">
           Enregistrez et améliorez votre voix sans télécharger de logiciel
         </h2>
         <p style={{ margin: 0, fontSize: 16, color: "var(--gris)", fontWeight: 600 }}>Tout se passe dans le navigateur, sur téléphone ou ordinateur.</p>
-        <div className="media" style={{ width: "100%", maxWidth: 900, aspectRatio: "16 / 9", marginTop: 12, borderRadius: 18 }}>
-          <Image src={IMAGES.editeur} alt="L'éditeur Studio Voix : forme d'onde et transcription avec une phrase barrée" fill sizes="(max-width: 932px) 100vw, 900px" />
+        <div className="media demo-image">
+          <Image src={IMAGES.editeur} alt="L'éditeur Studio Voix : forme d'onde et transcription avec une phrase barrée" fill sizes="(max-width: 760px) 100vw, 85vw" />
         </div>
       </section>
 
       {/* PROJETS */}
-      <section style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <section className="projects-section">
         <div className="center">
           <h2 className="h2">Lancez-vous dans un projet</h2>
-          <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "var(--texte)", maxWidth: 480 }}>
+          <p style={{ margin: 0, fontSize: 15, fontWeight: 500, color: "var(--texte)", maxWidth: 720 }}>
             Un podcast, un cours, une note vocale pour vos clients : choisissez un modèle et parlez.
           </p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
+        <div className="projects-grid">
           {projects.map((p) => (
-            <div key={p.title} className="card" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <article key={p.title} className="project-card">
               <h3 style={{ margin: 0, fontSize: 22, fontWeight: 800 }}>{p.title}</h3>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--encre)" }} />
+
                 <Link href={`/enregistrer?modele=${p.template}`} className="btn btn-noir">
                   Ouvrir le projet
                 </Link>
               </div>
-              <div className="media" style={{ aspectRatio: "1", borderRadius: 14 }}>
-                <Image src={p.img} alt={p.title} fill sizes="(max-width: 600px) 100vw, 340px" />
+              <div className="media project-image">
+                <Image src={p.img} alt={p.title} fill sizes="(max-width: 760px) 100vw, 33vw" />
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </section>
 
-      {/* BLOCS DÉTAILLÉS */}
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "40px 24px" }}>
-        {details.map((d) => (
-          <div key={d.title} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <div className="media" style={{ aspectRatio: "1", borderRadius: 22 }}>
-              <Image src={d.img} alt="" fill sizes="(max-width: 600px) 100vw, 540px" />
+      <section className="details-section" aria-label="Découvrez le studio">
+        {details.map((d, index) => (
+          <article key={d.title} className="detail-row">
+            <div className="detail-copy">
+              <span className="eyebrow">0{index + 1} / {['Un son plus clair', 'Le montage devient simple', 'À vous de parler', 'Chaque mot compte'][index]}</span>
+              <h2 className="h2">{d.title}</h2>
+              <p>{d.text}</p>
+              <Link className="detail-link" href="/enregistrer">Essayer Studio Voix <span aria-hidden="true">↗</span></Link>
             </div>
-            <h3 style={{ margin: 0, fontSize: 26, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.02em" }}>{d.title}</h3>
-            <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: "var(--texte)" }}>{d.text}</p>
-          </div>
+            <div className="media detail-image">
+              <Image src={d.img} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" />
+            </div>
+          </article>
         ))}
       </section>
 
       {/* TARIFS */}
-      <section id="tarifs" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <section id="tarifs" className="pricing-section">
         <div className="center">
           <h2 className="h2">Deux offres, paiement Mobile Money</h2>
           <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "var(--texte)" }}>Essai gratuit : 3 minutes d&apos;enregistrement.</p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
+        <div className="pricing-grid">
           <div style={{ border: "1px solid var(--bord)", borderRadius: 22, padding: "26px 22px", display: "flex", flexDirection: "column", gap: 12 }}>
             <strong style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--gris)" }}>Standard</strong>
             <span style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.02em" }}>
@@ -232,8 +225,12 @@ export default function Home() {
         </div>
       </section>
 
+      </div>
+      </main>
+
       {/* FOOTER */}
-      <footer style={{ background: "var(--fond)", borderRadius: 24, padding: "28px 22px", display: "flex", flexDirection: "column", gap: 24 }}>
+      <footer className="home-footer">
+        <div className="home-container footer-inner">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 22 }}>
           <FooterCol title="Cas d'utilisation" links={["Podcast", "Cours et formations", "Notes vocales pro", "Voix off"]} />
           <FooterCol title="Guides" links={["Bien enregistrer avec un téléphone", "Supprimer une phrase de l'audio", "Couper les silences", "Exporter en MP3"]} />
@@ -252,6 +249,7 @@ export default function Home() {
             ))}
           </div>
           <span style={{ fontSize: 12, color: "var(--gris)" }}>© 2026 Studio Voix. Tous droits réservés.</span>
+        </div>
         </div>
       </footer>
     </div>
